@@ -252,6 +252,344 @@ const Dashboard = () => {
     </div>
   );
 
+  const ProductMixPanel = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <ShoppingCart className="w-5 h-5 text-purple-600" />
+          Top Performing SKUs by Revenue
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={productMix} layout="horizontal">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis dataKey="brand" type="category" width={100} />
+            <Tooltip formatter={(value) => [`₱${value}`, 'Revenue']} />
+            <Bar dataKey="revenue" fill="#8B5CF6">
+              {productMix.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-green-600" />
+          Category Distribution
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={[
+                { name: 'Yosi', value: 830, units: 'units' },
+                { name: 'Beverages', value: 420, units: 'units' },
+                { name: 'Snacks', value: 600, units: 'units' },
+                { name: 'Haircare', value: 460, units: 'units' },
+                { name: 'Commodities', value: 650, units: 'units' }
+              ]}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {productMix.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Brand Substitution Matrix</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">From</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">To</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Frequency</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {substitutions.map((sub, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 text-sm font-medium text-gray-900">{sub.from}</td>
+                  <td className="px-4 py-2 text-sm text-gray-500">{sub.to}</td>
+                  <td className="px-4 py-2 text-sm text-gray-500">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {sub.frequency}x
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-500">{sub.category}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">SKU Performance Metrics</h3>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+            <span className="text-gray-700">Top SKU</span>
+            <span className="font-semibold text-purple-600">Marlboro (450 units)</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+            <span className="text-gray-700">Highest Revenue</span>
+            <span className="font-semibold text-green-600">Coca Cola (₱7,560)</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+            <span className="text-gray-700">Most Substituted</span>
+            <span className="font-semibold text-blue-600">Marlboro → Philip Morris</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+            <span className="text-gray-700">Category Leader</span>
+            <span className="font-semibold text-orange-600">Yosi (35% share)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ConsumerBehaviorPanel = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-orange-600" />
+          Request Pattern Analysis
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={consumerBehavior}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ type, percentage }) => `${type} ${percentage}%`}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="percentage"
+            >
+              {consumerBehavior.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-blue-600" />
+          Decision Time by Request Type
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={[
+            { type: 'Branded Request', avgTime: 35, transactions: 850 },
+            { type: 'Unbranded Request', avgTime: 52, transactions: 275 },
+            { type: 'Pointing', avgTime: 28, transactions: 100 },
+            { type: 'Store Suggestion', avgTime: 65, transactions: 25 }
+          ]}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="type" angle={-45} textAnchor="end" height={80} />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
+            <Tooltip />
+            <Legend />
+            <Bar yAxisId="left" dataKey="avgTime" fill="#06B6D4" name="Avg Time (s)" />
+            <Bar yAxisId="right" dataKey="transactions" fill="#10B981" name="Transactions" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Purchase Decision Factors</h3>
+        <div className="space-y-4">
+          {[
+            { factor: 'Brand Loyalty', percentage: 68, color: 'purple' },
+            { factor: 'Price Sensitivity', percentage: 45, color: 'green' },
+            { factor: 'Availability', percentage: 82, color: 'blue' },
+            { factor: 'Store Recommendation', percentage: 23, color: 'orange' },
+            { factor: 'Visual Appeal', percentage: 35, color: 'pink' }
+          ].map((factor, index) => (
+            <div key={index}>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm text-gray-700">{factor.factor}</span>
+                <span className="text-sm font-medium text-gray-900">{factor.percentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className={`bg-${factor.color}-500 h-2 rounded-full`}
+                  style={{ width: `${factor.percentage}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Behavioral Insights</h3>
+        <div className="space-y-3">
+          <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-800">Peak Decision Time</p>
+              <p className="text-xs text-gray-600">Unbranded requests take 48% longer to process</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+            <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-800">Brand Preference</p>
+              <p className="text-xs text-gray-600">68% of customers request specific brands</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+            <Users className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-gray-800">Interaction Pattern</p>
+              <p className="text-xs text-gray-600">Morning customers prefer pointing (12% vs 8% avg)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ConsumerProfilingPanel = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <Users className="w-5 h-5 text-purple-600" />
+          Customer Demographics
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={demographics}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="segment" />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
+            <Tooltip />
+            <Legend />
+            <Bar yAxisId="left" dataKey="transactions" fill="#8B5CF6" name="Transactions" />
+            <Bar yAxisId="right" dataKey="avgSpend" fill="#06B6D4" name="Avg Spend (₱)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-green-600" />
+          Geographic Distribution
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={[
+                { name: 'Metro Manila', value: 940, percentage: 69 },
+                { name: 'Rizal', value: 280, percentage: 21 },
+                { name: 'San Antonio', value: 120, percentage: 10 }
+              ]}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              fill="#8884d8"
+              paddingAngle={5}
+              dataKey="value"
+            >
+              {demographics.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="mt-4 space-y-2">
+          {[
+            { location: 'Metro Manila', customers: 940, color: 'purple' },
+            { location: 'Rizal', customers: 280, color: 'blue' },
+            { location: 'San Antonio', customers: 120, color: 'green' }
+          ].map((loc, index) => (
+            <div key={index} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 bg-${loc.color}-500 rounded-full`} />
+                <span>{loc.location}</span>
+              </div>
+              <span className="font-medium">{loc.customers} customers</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Spending Patterns by Segment</h3>
+        <div className="space-y-4">
+          {demographics.map((demo, index) => (
+            <div key={index} className="border-b border-gray-100 pb-3 last:border-0">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h4 className="font-medium text-gray-900">{demo.segment}</h4>
+                  <p className="text-xs text-gray-500">{demo.location}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-gray-900">₱{demo.avgSpend}</p>
+                  <p className="text-xs text-gray-500">avg spend</p>
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>{demo.transactions} transactions</span>
+                <span>₱{(demo.transactions * demo.avgSpend).toLocaleString()} total</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Lifetime Value</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={[
+            { month: 'Jan', newCustomers: 45, returningCustomers: 120, clv: 2850 },
+            { month: 'Feb', newCustomers: 52, returningCustomers: 135, clv: 3120 },
+            { month: 'Mar', newCustomers: 48, returningCustomers: 142, clv: 3350 },
+            { month: 'Apr', newCustomers: 58, returningCustomers: 155, clv: 3680 },
+            { month: 'May', newCustomers: 62, returningCustomers: 168, clv: 3920 },
+            { month: 'Jun', newCustomers: 55, returningCustomers: 175, clv: 4150 }
+          ]}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Area type="monotone" dataKey="newCustomers" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.6} />
+            <Area type="monotone" dataKey="returningCustomers" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
+          </AreaChart>
+        </ResponsiveContainer>
+        <div className="mt-4 flex justify-around text-center">
+          <div>
+            <p className="text-2xl font-bold text-purple-600">₱4,150</p>
+            <p className="text-xs text-gray-500">Avg CLV</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-green-600">76%</p>
+            <p className="text-xs text-gray-500">Retention Rate</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">
@@ -293,27 +631,9 @@ const Dashboard = () => {
         {/* Content Panels */}
         <div className="transition-all duration-300">
           {activeTab === 'trends' && <TransactionTrendsPanel />}
-          {activeTab === 'products' && (
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-              <ShoppingCart className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Product Mix & SKU Analysis</h3>
-              <p className="text-gray-500">Interactive product performance dashboard coming soon...</p>
-            </div>
-          )}
-          {activeTab === 'behavior' && (
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-              <Zap className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Consumer Behavior Insights</h3>
-              <p className="text-gray-500">Request patterns and decision analysis dashboard coming soon...</p>
-            </div>
-          )}
-          {activeTab === 'profiling' && (
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
-              <Users className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Consumer Profiling</h3>
-              <p className="text-gray-500">Demographic analysis and spending patterns coming soon...</p>
-            </div>
-          )}
+          {activeTab === 'products' && <ProductMixPanel />}
+          {activeTab === 'behavior' && <ConsumerBehaviorPanel />}
+          {activeTab === 'profiling' && <ConsumerProfilingPanel />}
         </div>
       </div>
     </div>
